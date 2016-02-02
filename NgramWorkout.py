@@ -14,17 +14,17 @@ def download_and_save_file_locally(file_url, counter=1):
 
 file = download_and_save_file_locally(
     'http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-ki.gz', 1)
-download_and_save_file_locally(
+file2 = download_and_save_file_locally(
     'http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-br.gz', 2)
 
-stemmer = RussianSnowballStemmer.Stemmer()
+stemmer = RussianSnowballStemmer.Stemmer() #just to ease codewriting
 
 
 for line in file:
     line = line.rstrip('\n')
     fields = line.split('\t')
-    fields[0] = fields[0].split(' ')
-    fields[0][0]= fields[0][0].split('_')[0]
-    if "кида" == stemmer.stem(fields[0][0]) and "_NOUN" in fields[0][1]:
+    fields[0] = fields[0].split(' ') #splitted words
+    fields[0][0]= fields[0][0].split('_')[0] #removed _VERB tag
+    if "кида" == stemmer.stem(fields[0][0]) and "_NOUN" in fields[0][1]: #checking if second word is NOUN
         print(fields)
-        fields[0][1]= fields[0][1].split('_')[0]
+        fields[0][1]= fields[0][1].split('_')[0] #removed _NOUN tag
