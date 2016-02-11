@@ -1,15 +1,8 @@
+import creating_word_specified_csv
 import ngram_tools
 import json
 import csv
 import subprocess
-
-
-def _checking_if_all_modules_installed():
-    ngram_tools.install_or_upgrade_module('pymorphy2')
-    ngram_tools.install_pip_stuff('pymorphy2-dicts-ru')
-
-
-_checking_if_all_modules_installed()
 import pymorphy2
 
 
@@ -19,7 +12,7 @@ def _get_word():
 
 
 def _creating_csv_reader(custom_word = 'кидать'):
-    ngram_url = ngram_tools.choose_right_ngram_url(custom_word)
+    ngram_url = creating_word_specified_csv._choose_right_ngram_url(custom_word)
     try:
         source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
     except IOError:
@@ -59,10 +52,14 @@ def _dict_creation_and_sorting():
     return dict_of_objects
 
 
-def final_information_write():
+def _final_information_write():
     with open(_get_word() + '_object_list.json','w+') as file:
         json.dump(_dict_creation_and_sorting(), file, ensure_ascii=False )
 
 
+def main():
+    _final_information_write()
+
+
 if __name__ == '__main__':
-    final_information_write()
+    main()

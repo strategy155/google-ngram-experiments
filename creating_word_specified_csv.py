@@ -1,30 +1,28 @@
 import ngram_tools
 import sys
-
-
-def _checking_if_all_modules_installed():
-    ngram_tools.install_or_upgrade_module('pymorphy2')
-    ngram_tools.install_pip_stuff('pymorphy2-dicts-ru')
-
-
-_checking_if_all_modules_installed()
-
-
 import pymorphy2
 import csv
+import transliterate
+
+
+def _choose_right_ngram_url(word_given):
+    """
+    :param word_given: string, of the keyword in ngram
+    :return:string, url adress which can be used to download ngram, bigram specifically
+    """
+    first_two_letters_transliterated = transliterate.translit(word_given, 'ru', reversed=True)[:2]
+    return 'http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-' + first_two_letters_transliterated + '.gz'
 
 
 def _get_word_from_parameters():
+    """
+    :return: string, first parameter provided to this py script
+    """
     try:
         return str(sys.argv[1])
     except IndexError:
         print('You didnt provide parameters')
         sys.exit()
-
-
-def _get_ngram_url(word_input):
-    ngram_url = ngram_tools.choose_right_ngram_url(word_input)
-    return ngram_url
 
 
 def _open_source_tsv(ngram_url):
@@ -56,9 +54,14 @@ def _creating_specified_csv(word_input, csv_writer, source_ngram_tsv):
                                         + str(counter_csv) + " lines were written in csv file." )
 
 
+def main():
+    _creating_specified_csv(_get_word_from_parameters(),
+                            _creating_csv_writer(
+                                    _choose_right_ngram_url(_get_word_from_parameters())),
+                            _open_source_tsv(
+                                    _choose_right_ngram_url(_get_word_from_parameters())))
+    return None
 
 
 if __name__ == '__main__':
-    _creating_specified_csv(_get_word_from_parameters(),
-                            _creating_csv_writer(_get_ngram_url(_get_word_from_parameters()))
-                            ,_open_source_tsv(_get_ngram_url(_get_word_from_parameters())))
+    main()
