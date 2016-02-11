@@ -15,28 +15,33 @@ def install_pip_stuff(package):
     pip.main(['install', '--upgrade', package])
 
 
-def try_install_module(package):
-    try:
-        cool_import(package)
-    except ImportError:
-        install_pip_stuff(package)
-    finally:
-        globals()[package] = importlib.import_module(package)
+def install_or_upgrade_module(package):
+    install_pip_stuff(package)
+
+
+def _checking_if_all_modules_installed():
+    install_or_upgrade_module('transliterate')
+
+
+_checking_if_all_modules_installed()
+
+
+import transliterate
+import gzip
+import urllib.error
+import urllib.request
+
 
 def choose_right_ngram_url(word_given):
-    try_install_module('transliterate')
     first_two_letters_transliterated = transliterate.translit(word_given, 'ru', reversed=True)[:2]
     return 'http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-' + first_two_letters_transliterated + '.gz'
 
 
 def download_and_open_gzip(file_url):
-    try_install_module('gzip')
     file_name = file_url.split('/')[-1]
     try:
         return gzip.open(file_name, 'rt+', encoding='utf-8')
     except IOError:
-        try_install_module('urllib.error')
-        try_install_module('urllib.request')
         try:
             urllib.request.urlretrieve(file_url, file_name, _reporthook)
         except urllib.error.URLError:

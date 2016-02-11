@@ -1,20 +1,16 @@
 import ngram_tools
+import json
+import csv
+import subprocess
 
 
 def _checking_if_all_modules_installed():
-    ngram_tools.try_install_module('json')
-    ngram_tools.try_install_module('pymorphy2')
-    ngram_tools.try_install_module('os')
+    ngram_tools.install_or_upgrade_module('pymorphy2')
     ngram_tools.install_pip_stuff('pymorphy2-dicts-ru')
-    ngram_tools.try_install_module('csv')
+
 
 _checking_if_all_modules_installed()
-
-
-import json
 import pymorphy2
-import os
-import csv
 
 
 def _get_word():
@@ -27,12 +23,13 @@ def _creating_csv_reader(custom_word = 'кидать'):
     try:
         source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
     except IOError:
-        os.system("creating_word_specified_csv.py " + custom_word)
-        source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'w+',newline='')
+        process_of_creating = subprocess.Popen(["python","creating_word_specified_csv.py",custom_word])
+        process_of_creating.wait()
+        source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
     return csv.reader(source_csv, delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 
-def creating_frequency_dict(csv_reader):
+def _creating_frequency_dict(csv_reader):
     morph = pymorphy2.MorphAnalyzer()
     counter = 0
     counter_of_objects = 0
@@ -57,15 +54,15 @@ def creating_frequency_dict(csv_reader):
 
 def _dict_creation_and_sorting():
     just_csv_reader = _creating_csv_reader(_get_word())
-    dict_of_objects = creating_frequency_dict(just_csv_reader)
+    dict_of_objects = _creating_frequency_dict(just_csv_reader)
     dict_of_objects = sorted(dict_of_objects.items(), key=lambda sample_dict: (sample_dict[1],sample_dict[0]), reverse=True)
     return dict_of_objects
 
 
-def main():
+def final_information_write():
     with open(_get_word() + '_object_list.json','w+') as file:
         json.dump(_dict_creation_and_sorting(), file, ensure_ascii=False )
 
 
 if __name__ == '__main__':
-    main()
+    final_information_write()
