@@ -4,6 +4,7 @@ import json
 import csv
 import subprocess
 import pymorphy2
+import sys
 
 
 def _get_word():
@@ -16,9 +17,12 @@ def _creating_csv_reader(custom_word = 'кидать'):
     try:
         source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
     except IOError:
-        process_of_creating = subprocess.Popen(["python","creating_word_specified_csv.py",custom_word])
-        process_of_creating.wait()
-        source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
+        try:
+            process_of_creating = subprocess.Popen([sys.executable,"creating_word_specified_csv.py",custom_word])
+            process_of_creating.wait()
+            source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
+        except FileNotFoundError:
+            sys.exit("script failed to create")
     return csv.reader(source_csv, delimiter=',',quotechar='"', quoting=csv.QUOTE_MINIMAL)
 
 

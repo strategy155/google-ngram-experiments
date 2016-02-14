@@ -4,6 +4,9 @@ import urllib.error
 import urllib.request
 
 
+_BYTES_IN_MEGABYTES = 1024 * 1024
+
+
 def download_and_open_gzip(file_url):
     file_name = file_url.split('/')[-1]
     try:
@@ -21,15 +24,18 @@ def updating_output_row(your_message):
     sys.stdout.write('\r')
     sys.stdout.write(your_message)
     sys.stdout.flush()
+    return None
 
 
-def _reporthook(block_num, block_size, total_size):
-    read_so_far = block_num * block_size
-    if total_size > 0:
-        percent = read_so_far * 1e2 / total_size
-        mes = "\r%5.1f%% %*d / %d" % (percent, len(str(total_size)), read_so_far, total_size) + " downloaded"
-        sys.stderr.write(mes)
-        if read_so_far >= total_size:
-            sys.stderr.write("\n")
+def _reporthook(_block_num, _block_size, _total_size):
+    _read_so_far = _block_num * _block_size
+    if _total_size > 0:
+        _percent_so_far = _read_so_far / _total_size
+        _mes = "\r{:.2%} {:.1f} / {:.1f}".format(_percent_so_far, _read_so_far/_BYTES_IN_MEGABYTES,
+                                                 _total_size/_BYTES_IN_MEGABYTES) + " megabytes downloaded"
+        updating_output_row(_mes)
+        if _read_so_far >= _total_size:
+            updating_output_row("\n")
     else:
-        sys.stderr.write("read %d\n" % (read_so_far,))
+        updating_output_row("read {d}\n".format(_read_so_far))
+    return None

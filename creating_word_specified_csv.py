@@ -5,13 +5,16 @@ import csv
 import transliterate
 
 
+_BIGRAM_SOURCE = "http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-"
+_NGRAM_TYPE = ".gz"
+
 def _choose_right_ngram_url(word_given):
     """
     :param word_given: string, of the keyword in ngram
     :return:string, url adress which can be used to download ngram, bigram specifically
     """
-    first_two_letters_transliterated = transliterate.translit(word_given, 'ru', reversed=True)[:2]
-    return 'http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-' + first_two_letters_transliterated + '.gz'
+    _first_two_letters_transliterated = transliterate.translit(word_given, "ru", reversed=True)[:2]
+    return _BIGRAM_SOURCE + _first_two_letters_transliterated + _NGRAM_TYPE
 
 
 def _get_word_from_parameters():
@@ -26,8 +29,7 @@ def _get_word_from_parameters():
 
 
 def _open_source_tsv(ngram_url):
-    source_ngram_tsv = ngram_tools.download_and_open_gzip(ngram_url)
-    return source_ngram_tsv
+    return ngram_tools.download_and_open_gzip(ngram_url)
 
 
 def _creating_csv_writer(ngram_url):
