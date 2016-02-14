@@ -3,6 +3,9 @@ import gzip
 import urllib.error
 import urllib.request
 
+import transliterate
+
+from creating_word_specified_csv import _BIGRAM_SOURCE, _NGRAM_TYPE
 
 _BYTES_IN_MEGABYTES = 1024 * 1024
 
@@ -39,3 +42,12 @@ def _reporthook(_block_num, _block_size, _total_size):
     else:
         updating_output_row("read {d}\n".format(_read_so_far))
     return None
+
+
+def choose_right_ngram_url(word_given):
+    """
+    :param word_given: string, of the keyword in ngram
+    :return:string, url adress which can be used to download ngram, bigram specifically
+    """
+    _first_two_letters_transliterated = transliterate.translit(word_given, "ru", reversed=True)[:2]
+    return _BIGRAM_SOURCE + _first_two_letters_transliterated + _NGRAM_TYPE

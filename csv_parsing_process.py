@@ -1,4 +1,3 @@
-import creating_word_specified_csv
 import ngram_tools
 import json
 import csv
@@ -13,13 +12,13 @@ def _get_word():
 
 
 def _creating_csv_reader(custom_word = 'кидать'):
-    ngram_url = creating_word_specified_csv._choose_right_ngram_url(custom_word)
+    ngram_url = ngram_tools.choose_right_ngram_url(custom_word)
     try:
         source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
     except IOError:
         try:
-            process_of_creating = subprocess.Popen([sys.executable,"creating_word_specified_csv.py",custom_word])
-            process_of_creating.wait()
+            p = subprocess.Popen([sys.executable,"creating_word_specified_csv.py",custom_word])
+            p.communicate()
             source_csv = open(ngram_url.split('/')[-1][:-3]+'.csv', 'r+',newline='')
         except FileNotFoundError:
             sys.exit("script failed to create")

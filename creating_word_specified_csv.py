@@ -1,20 +1,11 @@
-import ngram_tools
+import csv
 import sys
 import pymorphy2
-import csv
-import transliterate
+import ngram_tools
 
 
 _BIGRAM_SOURCE = "http://storage.googleapis.com/books/ngrams/books/googlebooks-rus-all-2gram-20120701-"
 _NGRAM_TYPE = ".gz"
-
-def _choose_right_ngram_url(word_given):
-    """
-    :param word_given: string, of the keyword in ngram
-    :return:string, url adress which can be used to download ngram, bigram specifically
-    """
-    _first_two_letters_transliterated = transliterate.translit(word_given, "ru", reversed=True)[:2]
-    return _BIGRAM_SOURCE + _first_two_letters_transliterated + _NGRAM_TYPE
 
 
 def _get_word_from_parameters():
@@ -38,7 +29,7 @@ def _creating_csv_writer(ngram_url):
     return csv_writer
 
 
-def _creating_specified_csv(word_input, csv_writer, source_ngram_tsv):
+def _creating_specified_csv(word_input, source_ngram_tsv, csv_writer):
     counter_tsv = 0
     counter_csv = 0
     morph = pymorphy2.MorphAnalyzer()
@@ -58,11 +49,10 @@ def _creating_specified_csv(word_input, csv_writer, source_ngram_tsv):
 
 def main():
     _creating_specified_csv(_get_word_from_parameters(),
-                            _creating_csv_writer(
-                                    _choose_right_ngram_url(_get_word_from_parameters())),
                             _open_source_tsv(
-                                    _choose_right_ngram_url(_get_word_from_parameters())))
-    return None
+                                    ngram_tools.choose_right_ngram_url(_get_word_from_parameters())),
+                            _creating_csv_writer(
+                                    ngram_tools.choose_right_ngram_url(_get_word_from_parameters())))
 
 
 if __name__ == '__main__':
